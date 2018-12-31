@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+</html>
+<head>
+<meta charset="utf-8">
+<style>
+ 
+#dropDown{
+	position:absolute;
+	top:10px;
+	left:150px;
+  }
+
+  * {
+	font-family: "Helvetica Neue";
+}
+p, text {
+	font-size: 1.2fem;
+}
+svg {
+	background: "white";
+}
+
+</style>
+</head>
+<body>
+  <input type="checkbox" id="myCheckbox"> show rg
+
+<div id="chart"></div>
+   <select id="dropDown">
+    <option value="best">TPPLamaBest</option>
+	  <option value="tpp" selected="selected">TPP</option>
+    <option value="n3r">VS II-II-VI</option>
+    <option value="tppLama">TPP-Lama Score</option>
+</select>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script type="text/javascript" src="bubble.js"></script>
+
+</body>
+</html>
