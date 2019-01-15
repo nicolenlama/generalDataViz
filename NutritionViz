@@ -1,0 +1,127 @@
+const margin = {top: 40, right: 10, bottom: 40, left: 50},
+    width = 700,
+		 height = 400,
+   axisPadding = height + 5;
+    
+
+	let x = d3.scaleLinear().range([0, width]),
+		   y = d3.scaleLinear().range([height,0])
+      sqrt = d3.scaleSqrt().range([2, 20]);
+
+	let xAxis = d3.axisBottom(x),
+		   yAxis = d3.axisLeft(y)
+
+	const svg = d3.select("#chart")
+		.append("svg")
+		.attr("height", height  + margin.top + margin.bottom)
+		.attr("width", width + margin.right + margin.left)
+		.append("g")
+		.attr("transform", "translate(" + margin.left+ "," + margin.right +  ")");
+
+	
+function runViz(Vegetables,Seafood,Fruits) {
+  
+		Vegetables.forEach( function(d) { //Format Data so that strings are floats
+    d.Calories = +d.Calories;
+		 d.Fat = +d.Fat;
+    d.Protein = +d.Protein }
+			);
+			
+		//Scale the range of data to svg
+		x.domain([ 0, 130])
+		y.domain([-0.5,20])
+   sqrt.domain([0, d3.max(Seafood, d=> d.Calories)])
+  
+  //Append Circles for Veggies
+	var circles = svg.selectAll('.Vegetables')
+      .data(Vegetables)
+			 .enter()
+      .append("circle")
+			 .attr("class", "Vegetables")
+			 .attr("r", function(d) {
+        return sqrt(d.Calories)
+      })
+			.attr("fill","green")
+			.attr("cx", d => x(d.Protein))
+			.attr("cy", d => y(d.Fat))
+      .on("mouseover" , function(){ d3.select(this).attr('fill', 'orange');tooltip.style("display",null)})
+      .on("mouseout" , function(){ d3.select(this).attr('fill', 'green');tooltip.style("display","none"); })
+      .on("mousemove", function(d) {
+        			            tooltip.select("text").text(d.Vegetables + " | Protein: " + d.Protein + " | Fat: " + d.Fat + ' | Cal: '+ d.Calories);
+          });
+  
+  //Append circles for Seafood
+  
+  	var circles = svg.selectAll('.Seafood')
+      .data(Seafood)
+			 .enter()
+      .append("circle")
+			 .attr("class", "Seafood")
+			 .attr("r", function(d) {
+        return sqrt(d.Calories)}
+      )
+			.attr("fill","blue")
+			.attr("cx", d => x(d.Protein))
+			.attr("cy", d => y(d.Fat))
+      .on("mouseover" , function(){ d3.select(this).attr('fill', 'orange');tooltip.style("display",null)})
+      .on("mouseout" , function(){ d3.select(this).attr('fill', 'blue');tooltip.style("display","none"); })
+      .on("mousemove", function(d) {
+        			            tooltip.select("text").text(d.Seafood + " | Protein: " + d.Protein + " | Fat: " + d.Fat + ' | Cal: '+ d.Calories);
+          });
+  
+		//Add X and Y axis
+		svg.append("g")
+      .attr("class", "y axis")
+			.attr("transform", "translate(0,0)")
+			.call(yAxis)
+      
+  
+    svg.append("g")
+			.attr("class", "x axis")
+      .attr("transform", "translate(0," + axisPadding + ")")
+      .call(xAxis.tickSize(5));
+
+  // text label for the x axis
+  svg.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top) + ")")
+      .style("text-anchor", "middle")
+      .text("Protein");
+    
+      // text label for the y axis
+  svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Fat");   
+  
+ var tooltip = svg.append("svg")
+      .attr("class", "tooltip")
+      .style("display", "none");
+	
+  tooltip.append("text")
+    .attr("x", 30)
+    .attr("dy", "1.5em")
+    .style("text-anchor", "top")
+    .attr("font-size", "20px")
+    .attr("fontFamily" ,"Helvetica Neue")
+    .attr("font-weight", "regular");
+
+} //end of runViz
+
+d3.queue()
+	.defer(d3.csv, "vegetables.csv")
+  .defer(d3.csv, "seafood.csv")
+  .defer(d3.csv, "fruit.csv")
+  .await(init);
+
+function init(error, Vegetables, Seafood, Fruits) {
+		if (error) throw error; 
+        console.log(Seafood)
+        runViz(Vegetables, Seafood, Fruits);  
+
+  
+};// End of init()
